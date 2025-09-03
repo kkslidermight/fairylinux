@@ -1,0 +1,40 @@
+[Build image (local stub for act)/set-env] ⭐ Run Set up job
+[Build image (local stub for act)/set-env] 🚀  Start image=ghcr.io/catthehacker/ubuntu:full-latest
+[Build image (local stub for act)/set-env]   🐳  docker pull image=ghcr.io/catthehacker/ubuntu:full-latest platform= username= forcePull=true
+[Build image (local stub for act)/set-env]   🐳  docker create image=ghcr.io/catthehacker/ubuntu:full-latest platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[Build image (local stub for act)/set-env]   🐳  docker run image=ghcr.io/catthehacker/ubuntu:full-latest platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[Build image (local stub for act)/set-env]   🐳  docker exec cmd=[chown -R 1001:128 /home/kk/code/alma_atomic_sig/fairylinux] user=0 workdir=
+[Build image (local stub for act)/set-env]   🐳  docker exec cmd=[node --no-warnings -e console.log(process.execPath)] user= workdir=
+[Build image (local stub for act)/set-env]   ✅  Success - Set up job
+[Build image (local stub for act)/set-env] ⭐ Run Main Set outputs (local stub)
+[Build image (local stub for act)/set-env]   🐳  docker exec cmd=[bash -e /var/run/act/workflow/0] user= workdir=
+[Build image (local stub for act)/set-env]   ✅  Success - Main Set outputs (local stub) [2.918080832s]
+[Build image (local stub for act)/set-env]   ⚙  ::set-output:: PLATFORMS=amd64
+[Build image (local stub for act)/set-env]   ⚙  ::set-output:: IMAGE_PATH=my/path
+[Build image (local stub for act)/set-env]   ⚙  ::set-output:: IMAGE_NAME=my-image
+[Build image (local stub for act)/set-env]   ⚙  ::set-output:: IMAGE_REF=ghcr.io/my/path/my-image
+[Build image (local stub for act)/set-env]   ⚙  ::set-output:: IS_SIGNED=false
+[Build image (local stub for act)/set-env]   ⚙  ::set-output:: LATEST_TAG=v1
+[Build image (local stub for act)/set-env]   ⚙  ::set-output:: REGISTRY=ghcr.io
+[Build image (local stub for act)/set-env]   ⚙  ::set-output:: REGISTRY_USER=github-actions
+[Build image (local stub for act)/set-env] ⭐ Run Complete job
+[Build image (local stub for act)/set-env] Cleaning up container for job set-env
+[Build image (local stub for act)/set-env]   ✅  Success - Complete job
+[Build image (local stub for act)/set-env] 🏁  Job succeeded
+[Build image (local stub for act)/build-image] ⭐ Run Set up job
+[Build image (local stub for act)/build-image] 🚀  Start image=ghcr.io/catthehacker/ubuntu:full-latest
+[Build image (local stub for act)/build-image]   🐳  docker pull image=ghcr.io/catthehacker/ubuntu:full-latest platform= username= forcePull=true
+[Build image (local stub for act)/build-image]   🐳  docker create image=ghcr.io/catthehacker/ubuntu:full-latest platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[Build image (local stub for act)/build-image]   🐳  docker run image=ghcr.io/catthehacker/ubuntu:full-latest platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[Build image (local stub for act)/build-image]   🐳  docker exec cmd=[chown -R 1001:128 /home/kk/code/alma_atomic_sig/fairylinux] user=0 workdir=
+[Build image (local stub for act)/build-image]   🐳  docker exec cmd=[node --no-warnings -e console.log(process.execPath)] user= workdir=
+[Build image (local stub for act)/build-image]   ✅  Success - Set up job
+[Build image (local stub for act)/build-image] ⭐ Run Main Print image info (local stub)
+[Build image (local stub for act)/build-image]   🐳  docker exec cmd=[bash -e /var/run/act/workflow/0] user= workdir=
+[Build image (local stub for act)/build-image]   | IMAGE_NAME=my-image
+[Build image (local stub for act)/build-image]   | IMAGE_REF=ghcr.io/my/path/my-image:v1
+[Build image (local stub for act)/build-image]   ✅  Success - Main Print image info (local stub) [2.869090838s]
+[Build image (local stub for act)/build-image] ⭐ Run Complete job
+[Build image (local stub for act)/build-image] Cleaning up container for job build-image
+[Build image (local stub for act)/build-image]   ✅  Success - Complete job
+[Build image (local stub for act)/build-image] 🏁  Job succeeded

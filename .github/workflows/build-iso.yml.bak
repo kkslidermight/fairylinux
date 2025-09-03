@@ -1,4 +1,11 @@
 ---
+# backup of original build-iso.yml
+# This file was automatically backed up before creating a local stub for act runs.
+# Restore from this file after local testing if desired.
+
+# Original content follows:
+
+---
 # ba0fde3d-bee7-4307-b97b-17d0d20aff50
 name: Build ISO
 on:
@@ -54,4 +61,3 @@ jobs:
       R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
       ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
       SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          echo "upload-to-cloudflare=false (local)"

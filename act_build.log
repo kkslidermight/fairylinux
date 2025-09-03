@@ -1,0 +1,68 @@
+[Build image/set-env] ⭐ Run Set up job
+[Build image/set-env] 🚀  Start image=ghcr.io/catthehacker/ubuntu:full-latest
+[Build image/set-env]   🐳  docker pull image=ghcr.io/catthehacker/ubuntu:full-latest platform= username= forcePull=true
+[Build image/set-env]   🐳  docker create image=ghcr.io/catthehacker/ubuntu:full-latest platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[Build image/set-env]   🐳  docker run image=ghcr.io/catthehacker/ubuntu:full-latest platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[Build image/set-env]   🐳  docker exec cmd=[chown -R 1001:128 /home/kk/code/alma_atomic_sig/fairylinux] user=0 workdir=
+[Build image/set-env]   🐳  docker exec cmd=[node --no-warnings -e console.log(process.execPath)] user= workdir=
+[Build image/set-env]   ✅  Success - Set up job
+[Build image/set-env] ⭐ Run Main Checkout repository
+[Build image/set-env]   🐳  docker cp src=/home/kk/code/alma_atomic_sig/fairylinux/. dst=/home/kk/code/alma_atomic_sig/fairylinux
+[Build image/set-env]   🐳  docker exec cmd=[chown -R 1001:128 /home/kk/code/alma_atomic_sig/fairylinux] user=0 workdir=
+[Build image/set-env]   ✅  Success - Main Checkout repository [1.079654757s]
+[Build image/set-env] ⭐ Run Main Set environment variables
+[Build image/set-env] ⭐ Run Main Set environment variables
+[Build image/set-env]   🐳  docker exec cmd=[bash --noprofile --norc -e -o pipefail /var/run/act/workflow/set-composite-set.sh] user= workdir=
+[Build image/set-env]   ✅  Success - Main Set environment variables [2.927724454s]
+[Build image/set-env]   ⚙  ::set-output:: IMAGE_REF=ghcr.io/kkslidermight/fairylinux
+[Build image/set-env]   ⚙  ::set-output:: PLATFORMS=amd64
+[Build image/set-env]   ⚙  ::set-output:: IS_SIGNED=true
+[Build image/set-env]   ⚙  ::set-output:: LATEST_TAG=main
+[Build image/set-env]   ⚙  ::set-output:: REGISTRY=ghcr.io
+[Build image/set-env]   ⚙  ::set-output:: REGISTRY_USER=kkslidermight
+[Build image/set-env]   ⚙  ::set-output:: IMAGE_PATH=kkslidermight
+[Build image/set-env]   ⚙  ::set-output:: IMAGE_NAME=fairylinux
+[Build image/set-env]   ⚙  ::set-output:: LATEST_TAG=main
+[Build image/set-env]   ⚙  ::set-output:: REGISTRY=ghcr.io
+[Build image/set-env]   ⚙  ::set-output:: REGISTRY_USER=kkslidermight
+[Build image/set-env]   ⚙  ::set-output:: PLATFORMS=amd64
+[Build image/set-env]   ⚙  ::set-output:: IMAGE_PATH=kkslidermight
+[Build image/set-env]   ⚙  ::set-output:: IMAGE_NAME=fairylinux
+[Build image/set-env]   ⚙  ::set-output:: IMAGE_REF=ghcr.io/kkslidermight/fairylinux
+[Build image/set-env]   ⚙  ::set-output:: IS_SIGNED=true
+[Build image/set-env]   ✅  Success - Main Set environment variables [9.585903583s]
+[Build image/set-env]   ⚙  ::set-output:: LATEST_TAG=main
+[Build image/set-env]   ⚙  ::set-output:: REGISTRY=ghcr.io
+[Build image/set-env]   ⚙  ::set-output:: REGISTRY_USER=kkslidermight
+[Build image/set-env]   ⚙  ::set-output:: IMAGE_PATH=kkslidermight
+[Build image/set-env]   ⚙  ::set-output:: IMAGE_NAME=fairylinux
+[Build image/set-env]   ⚙  ::set-output:: IMAGE_REF=ghcr.io/kkslidermight/fairylinux
+[Build image/set-env]   ⚙  ::set-output:: PLATFORMS=amd64
+[Build image/set-env]   ⚙  ::set-output:: IS_SIGNED=true
+[Build image/set-env] ⭐ Run Post Set environment variables
+[Build image/set-env]   ✅  Success - Post Set environment variables [27.68µs]
+[Build image/set-env] ⭐ Run Complete job
+[Build image/set-env] Cleaning up container for job set-env
+[Build image/set-env]   ✅  Success - Complete job
+[Build image/set-env] 🏁  Job succeeded
+[Build image/Build and push image] ⭐ Run Set up job
+[Build image/Build and push image] 🚀  Start image=ghcr.io/catthehacker/ubuntu:full-latest
+[Build image/Build and push image]   🐳  docker pull image=ghcr.io/catthehacker/ubuntu:full-latest platform= username= forcePull=true
+[Build image/Build and push image]   🐳  docker create image=ghcr.io/catthehacker/ubuntu:full-latest platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[Build image/Build and push image]   🐳  docker run image=ghcr.io/catthehacker/ubuntu:full-latest platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[Build image/Build and push image]   🐳  docker exec cmd=[chown -R 1001:128 /home/kk/code/alma_atomic_sig/fairylinux] user=0 workdir=
+[Build image/Build and push image]   🐳  docker exec cmd=[node --no-warnings -e console.log(process.execPath)] user= workdir=
+[Build image/Build and push image]   ✅  Success - Set up job
+[Build image/Build and push image] ⭐ Run Main Checkout repository
+[Build image/Build and push image]   🐳  docker cp src=/home/kk/code/alma_atomic_sig/fairylinux/. dst=/home/kk/code/alma_atomic_sig/fairylinux
+[Build image/Build and push image]   🐳  docker exec cmd=[chown -R 1001:128 /home/kk/code/alma_atomic_sig/fairylinux] user=0 workdir=
+[Build image/Build and push image]   ✅  Success - Main Checkout repository [1.062347116s]
+[Build image/Build and push image] ⭐ Run Main Build and push image
+[Build image/Build and push image]   🐳  docker exec cmd=[bash -e /var/run/act/workflow/build] user= workdir=
+[Build image/Build and push image]   | time="2025-09-03T15:46:36Z" level=warning msg="\"/\" is not a shared mount, this could cause issues or missing mounts with rootless containers"
+[Build image/Build and push image]   | Error: cannot setup namespace using newuidmap: exit status 1
+[Build image/Build and push image]   ❌  Failure - Main Build and push image [2.940886088s]
+[Build image/Build and push image] exitcode '125': failure
+[Build image/Build and push image] ⭐ Run Complete job
+[Build image/Build and push image]   ✅  Success - Complete job
+[Build image/Build and push image] 🏁  Job failed

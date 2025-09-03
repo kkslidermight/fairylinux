@@ -3,6 +3,8 @@
 name: Build ISO
 on:
   workflow_dispatch:
+env:
+  R2_BUCKET: ${{ secrets.R2_BUCKET }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
@@ -45,9 +47,10 @@ jobs:
       REGISTRY: ${{ needs.set-env.outputs.REGISTRY }}
       REGISTRY_USER: ${{ needs.set-env.outputs.REGISTRY_USER }}
       upload-to-cloudflare: true
-      bucket: ${{ secrets.R2_BUCKET }}
+      bucket: ${{ env.R2_BUCKET }}
     secrets:
       REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
       R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
       ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
       SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}

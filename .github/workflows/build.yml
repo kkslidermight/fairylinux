@@ -54,5 +54,7 @@ jobs:
       REGISTRY: ${{ needs.set-env.outputs.REGISTRY }}
       REGISTRY_USER: ${{ needs.set-env.outputs.REGISTRY_USER }}
     secrets:
-      REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Prefer a full-permission PAT for pushing images
+      REGISTRY_TOKEN: ${{ secrets.GHCR_PAT }}
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+

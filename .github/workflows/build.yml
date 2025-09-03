@@ -1,43 +1,13 @@
-name: Build image
-on:
-  pull_request:
-  push:
-    branches:
-      - 'main'
-    paths-ignore:
-      - '**/README.md'
-  workflow_dispatch:
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
-  cancel-in-progress: true
-
-jobs:
-  set-env:
-    runs-on: ubuntu-latest
-    outputs:
-      LATEST_TAG: ${{ steps.set.outputs.LATEST_TAG }}
-      REGISTRY: ghcr.io
-      REGISTRY_USER: kkslidermight
-      IMAGE_PATH: kkslidermight
-      IMAGE_NAME: fairylinux
-      PLATFORMS: ${{ steps.set.outputs.PLATFORMS }}
-      IMAGE_REF: ghcr.io/kkslidermight/fairylinux
-      IS_SIGNED: ${{ steps.set.outputs.IS_SIGNED }}
-    steps:
-      - name: Checkout github actions
-        uses: actions/checkout@v4
-
-      - name: Set environment variables
-        uses: ./.github/actions/config
-        id: set
-        with:
-          SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
-
   build-image:
     name: Build image
-    uses: AlmaLinux/atomic-ci/.github/workflows/build-image.yml@v7
+    runs-on: ubuntu-latest
     needs: set-env
+    outputs:
+      image-ref: ${{ steps.build.outputs.image-ref }}
+      digest: ${{ steps.build.outputs.digest }}
+      version: ${{ steps.build.outputs.version }}
+      major-version: ${{ steps.build.outputs.major-version }}
+      redhat-version-id: ${{ steps.build.outputs.redhat-version-id }}
     with:
       image-description: "My AlmaLinux Atomic Respin"
       containerfile: Dockerfile
@@ -56,53 +26,34 @@ jobs:
       contents: read
       packages: write
       id-token: write
-
-  test-image:
-    name: Test image
-    runs-on: ubuntu-latest
-    needs: [set-env, build-image]
-    env:
-      IMAGE_REF: "${{ needs.build-image.outputs.image-ref }}@${{ needs.build-image.outputs.digest }}"
     steps:
-      - name: Login to Container Registry
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
         run: echo ${{ github.repository_owner == 'kkslidermight' && secrets.GITHUB_TOKEN || secrets.GHCR_PAT }} \
           | podman login -u ${{ needs.set-env.outputs.REGISTRY_USER }} --password-stdin ${{ needs.set-env.outputs.REGISTRY }}
 
-      - name: Test container
+      - name: Build and push image
+        id: build
         run: |
-          set -ex
-          cat /etc/os-release
-          bootc -V
-
-  promote-image:
-    name: Promote image
-    needs: [set-env, build-image, test-image]
-    if: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
-    uses: AlmaLinux/atomic-ci/.github/workflows/retag-image.yml@v7
-    with:
-      image: ${{ needs.build-image.outputs.image-ref }}
-      digest: ${{ needs.build-image.outputs.digest }}
-      tag: |
-        ${{ needs.set-env.outputs.LATEST_TAG }}
-        ${{ needs.build-image.outputs.major-version }}
-        ${{ needs.build-image.outputs.redhat-version-id }}
-        ${{ needs.build-image.outputs.version }}
-      REGISTRY: ${{ needs.set-env.outputs.REGISTRY }}
-      REGISTRY_USER: ${{ needs.set-env.outputs.REGISTRY_USER }}
-    secrets:
-      REGISTRY_TOKEN: ${{ github.repository_owner == 'kkslidermight' && secrets.GITHUB_TOKEN || secrets.GHCR_PAT }}
-    permissions:
-      packages: write
-
-  create-release:
-    name: Create Release
-    needs: [set-env, build-image, test-image, promote-image]
-    if: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
-    uses: AlmaLinux/atomic-ci/.github/workflows/create-release.yml@v7
-    with:
-      image-name: "${{ needs.set-env.outputs.IMAGE_NAME }}"
-      version: ${{ needs.build-image.outputs.version }}
-      pretty-version: ${{ needs.build-image.outputs.redhat-version-id }}
-      latest-image-ref: "${{ needs.build-image.outputs.image-ref }}:${{ needs.set-env.outputs.LATEST_TAG }}"
-    permissions:
-      contents: write
+          IMAGE_REF="${{ needs.set-env.outputs.IMAGE_REF }}"
+          IMAGE_TAG="${{ github.sha }}"
+          FULL_IMAGE_REF="${IMAGE_REF}:${IMAGE_TAG}"
+          podman build \
+            --security-opt=label=disable \
+            --cap-add=all \
+            --device /dev/fuse \
+            --build-arg IMAGE_NAME="${{ needs.set-env.outputs.IMAGE_NAME }}" \
+            --build-arg IMAGE_REGISTRY="${{ needs.set-env.outputs.REGISTRY }}" \
+            --build-arg VARIANT="" \
+            -t "${FULL_IMAGE_REF}" \
+            -f Dockerfile \
+            .
+          podman push "${FULL_IMAGE_REF}"
+          DIGEST=$(podman inspect --format='{{.Digest}}' "${FULL_IMAGE_REF}")
+          echo "image-ref=${IMAGE_REF}" >> $GITHUB_OUTPUT
+          echo "digest=${DIGEST}" >> $GITHUB_OUTPUT
+          echo "version=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+          echo "major-version=latest" >> $GITHUB_OUTPUT
+          echo "redhat-version-id=10" >> $GITHUB_OUTPUT

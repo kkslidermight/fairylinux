@@ -40,19 +40,19 @@ jobs:
     needs: [set-env]
     uses: AlmaLinux/atomic-ci/.github/workflows/build-iso.yml@v7
     with:
-      image-name: ${{ needs.set-env.outputs.IMAGE_NAME }}
-      image: ${{ needs.set-env.outputs.IMAGE_REF }}:${{ needs.set-env.outputs.LATEST_TAG }}
-      update_origin_ref: ${{ needs.set-env.outputs.IMAGE_REF }}:${{ needs.set-env.outputs.LATEST_TAG }}
+      image-name: "${{ needs.set-env.outputs.IMAGE_NAME }}"
+      image: "${{ needs.set-env.outputs.IMAGE_REF }}:${{ needs.set-env.outputs.LATEST_TAG }}"
+      update_origin_ref: "${{ needs.set-env.outputs.IMAGE_REF }}:${{ needs.set-env.outputs.LATEST_TAG }}"
       update_is_signed: ${{ needs.set-env.outputs.IS_SIGNED == 'true' }}
       config-file: ./iso.toml
       platforms: ${{ needs.set-env.outputs.PLATFORMS }}
       REGISTRY: ${{ needs.set-env.outputs.REGISTRY }}
       REGISTRY_USER: ${{ needs.set-env.outputs.REGISTRY_USER }}
-      # Enable Cloudflare R2 upload. Ensure repository secrets
-      # R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY are configured.
       upload-to-cloudflare: true
+      bucket: ${{ secrets.R2_BUCKET }}
     secrets:
       REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
       R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
-      ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      ACCESS_KEY_ID: ${{ secrets.ACESS_KEY_ID }}
       SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}

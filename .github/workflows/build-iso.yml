@@ -48,6 +48,8 @@ jobs:
       platforms: ${{ needs.set-env.outputs.PLATFORMS }}
       REGISTRY: ${{ needs.set-env.outputs.REGISTRY }}
       REGISTRY_USER: ${{ needs.set-env.outputs.REGISTRY_USER }}
+      # Enable Cloudflare R2 upload. Ensure repository secrets
+      # R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY are configured.
       upload-to-cloudflare: true
     secrets:
       REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}

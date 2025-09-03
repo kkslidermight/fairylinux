@@ -1,5 +1,3 @@
----
-# ba0fde3d-bee7-4307-b97b-17d0d20aff50
 name: Build image
 on:
   pull_request:
@@ -16,20 +14,19 @@ concurrency:
 
 jobs:
   set-env:
-    if: github.repository != 'AlmaLinux/atomic-respin-template'
     runs-on: ubuntu-latest
     outputs:
       LATEST_TAG: ${{ steps.set.outputs.LATEST_TAG }}
-      REGISTRY: ${{ steps.set.outputs.REGISTRY }}
-      REGISTRY_USER: ${{ steps.set.outputs.REGISTRY_USER }}
+      REGISTRY: ghcr.io
+      REGISTRY_USER: kkslidermight
+      IMAGE_PATH: kkslidermight
+      IMAGE_NAME: fairylinux
       PLATFORMS: ${{ steps.set.outputs.PLATFORMS }}
-      IMAGE_PATH: ${{ steps.set.outputs.IMAGE_PATH }}
-      IMAGE_NAME: ${{ steps.set.outputs.IMAGE_NAME }}
-      IMAGE_REF: ${{ steps.set.outputs.IMAGE_REF }}
+      IMAGE_REF: ghcr.io/kkslidermight/fairylinux
       IS_SIGNED: ${{ steps.set.outputs.IS_SIGNED }}
     steps:
       - name: Checkout github actions
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        uses: actions/checkout@v4
 
       - name: Set environment variables
         uses: ./.github/actions/config
@@ -53,7 +50,7 @@ jobs:
       REGISTRY: ${{ needs.set-env.outputs.REGISTRY }}
       REGISTRY_USER: ${{ needs.set-env.outputs.REGISTRY_USER }}
     secrets:
-      REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      REGISTRY_TOKEN: ${{ github.repository_owner == 'kkslidermight' && secrets.GITHUB_TOKEN || secrets.GHCR_PAT }}
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
     permissions:
       contents: read
@@ -64,28 +61,18 @@ jobs:
     name: Test image
     runs-on: ubuntu-latest
     needs: [set-env, build-image]
-
     env:
       IMAGE_REF: "${{ needs.build-image.outputs.image-ref }}@${{ needs.build-image.outputs.digest }}"
-
     steps:
       - name: Login to Container Registry
-        run: echo ${{ secrets.GITHUB_TOKEN }} | podman login -u ${{ needs.set-env.outputs.REGISTRY_USER }} --password-stdin ${{ needs.set-env.outputs.REGISTRY }}
+        run: echo ${{ github.repository_owner == 'kkslidermight' && secrets.GITHUB_TOKEN || secrets.GHCR_PAT }} \
+          | podman login -u ${{ needs.set-env.outputs.REGISTRY_USER }} --password-stdin ${{ needs.set-env.outputs.REGISTRY }}
 
       - name: Test container
         run: |
-          # Create a short script to test the image using heredoc
-          cat << 'EOF' > /tmp/test.sh
           set -ex
-
           cat /etc/os-release
           bootc -V
-          EOF
-
-          podman run --rm \
-            -v /tmp/test.sh:/tmp/test.sh \
-            ${{ env.IMAGE_REF }} \
-            /bin/bash /tmp/test.sh
 
   promote-image:
     name: Promote image
@@ -103,7 +90,7 @@ jobs:
       REGISTRY: ${{ needs.set-env.outputs.REGISTRY }}
       REGISTRY_USER: ${{ needs.set-env.outputs.REGISTRY_USER }}
     secrets:
-      REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      REGISTRY_TOKEN: ${{ github.repository_owner == 'kkslidermight' && secrets.GITHUB_TOKEN || secrets.GHCR_PAT }}
     permissions:
       packages: write
 

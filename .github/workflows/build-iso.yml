@@ -1,8 +1,12 @@
----
-# ba0fde3d-bee7-4307-b97b-17d0d20aff50
 name: Build ISO
+
 on:
   workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
@@ -36,9 +40,9 @@ jobs:
     needs: [set-env]
     uses: AlmaLinux/atomic-ci/.github/workflows/build-iso.yml@v7
     with:
-      image-name: "${{ needs.set-env.outputs.IMAGE_NAME }}"
-      image: "${{ needs.set-env.outputs.IMAGE_REF }}:${{ needs.set-env.outputs.LATEST_TAG }}"
-      update_origin_ref: "${{ needs.set-env.outputs.IMAGE_REF }}:${{ needs.set-env.outputs.LATEST_TAG }}"
+      image-name: ${{ needs.set-env.outputs.IMAGE_NAME }}
+      image: ${{ needs.set-env.outputs.IMAGE_REF }}:${{ needs.set-env.outputs.LATEST_TAG }}
+      update_origin_ref: ${{ needs.set-env.outputs.IMAGE_REF }}:${{ needs.set-env.outputs.LATEST_TAG }}
       update_is_signed: ${{ needs.set-env.outputs.IS_SIGNED == 'true' }}
       config-file: ./iso.toml
       platforms: ${{ needs.set-env.outputs.PLATFORMS }}
@@ -47,7 +51,6 @@ jobs:
       upload-to-cloudflare: true
     secrets:
       REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      R2_BUCKET: ${{ secrets.R2_BUCKET }}
       R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
       ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
       SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}

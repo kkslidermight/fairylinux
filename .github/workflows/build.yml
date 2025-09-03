@@ -122,21 +122,29 @@ jobs:
     name: Promote image
     needs: [set-env, build-image, test-image]
     if: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
-    uses: AlmaLinux/atomic-ci/.github/workflows/retag-image.yml@v7
-    with:
-      image: ${{ needs.build-image.outputs.image-ref }}
-      digest: ${{ needs.build-image.outputs.digest }}
-      tag: |
-        ${{ needs.set-env.outputs.LATEST_TAG }}
-        ${{ needs.build-image.outputs.major-version }}
-        ${{ needs.build-image.outputs.redhat-version-id }}
-        ${{ needs.build-image.outputs.version }}
-      REGISTRY: ${{ needs.set-env.outputs.REGISTRY }}
-      REGISTRY_USER: ${{ needs.set-env.outputs.REGISTRY_USER }}
-    secrets:
-      REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
     permissions:
       packages: write
+    steps:
+      - name: Log in to GitHub Container Registry
+        run: echo ${{ secrets.GITHUB_TOKEN }} | podman login -u ${{ needs.set-env.outputs.REGISTRY_USER }} --password-stdin ${{ needs.set-env.outputs.REGISTRY }}
+
+      - name: Retag and promote image
+        run: |
+          SOURCE_IMAGE="${{ needs.build-image.outputs.image-ref }}@${{ needs.build-image.outputs.digest }}"
+          REGISTRY="${{ needs.set-env.outputs.REGISTRY }}"
+          IMAGE_PATH="${{ needs.set-env.outputs.IMAGE_PATH }}"
+          IMAGE_NAME="${{ needs.set-env.outputs.IMAGE_NAME }}"
+          
+          # Pull the source image
+          podman pull "${SOURCE_IMAGE}"
+          
+          # Tag and push with different tags
+          for tag in "${{ needs.set-env.outputs.LATEST_TAG }}" "${{ needs.build-image.outputs.major-version }}" "${{ needs.build-image.outputs.redhat-version-id }}" "${{ needs.build-image.outputs.version }}"; do
+            TARGET_IMAGE="${REGISTRY}/${IMAGE_PATH}/${IMAGE_NAME}:${tag}"
+            podman tag "${SOURCE_IMAGE}" "${TARGET_IMAGE}"
+            podman push "${TARGET_IMAGE}"
+          done
 
   create-release:
     name: Create Release

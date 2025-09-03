@@ -47,9 +47,9 @@ runs:
         fi
 
         REGISTRY=ghcr.io
-        REGISTRY_USER=${{ github.actor }}
-        IMAGE_PATH=${{ github.repository_owner }}
-        IMAGE_NAME=${{ github.event.repository.name }}
+        REGISTRY_USER=kkslidermight
+        IMAGE_PATH=kkslidermight
+        IMAGE_NAME=fairylinux
         PLATFORMS="amd64"
 
         echo "REGISTRY=${REGISTRY}" >> $GITHUB_OUTPUT

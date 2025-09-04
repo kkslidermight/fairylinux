@@ -1,0 +1,55 @@
+name: Upload R2 manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'The workflow run ID to fetch artifacts from'
+        required: true
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y jq unzip curl
+
+      - name: Download artifacts for run
+        id: download
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          run_id='${{ github.event.inputs.run_id }}'
+          if [ -z "$run_id" ]; then
+            echo "run_id input is required"; exit 1
+          fi
+          echo "Fetching artifacts for run $run_id"
+          api_url="https://api.github.com/repos/${{ github.repository }}/actions/runs/$run_id/artifacts"
+          curl -sS -H "Authorization: token $GH_TOKEN" "$api_url" > /tmp/artifacts.json
+          jq -r '.artifacts[] | .archive_download_url' /tmp/artifacts.json > /tmp/artifacts_urls.txt || true
+          mkdir -p artifacts
+          while read -r url; do
+            [ -z "$url" ] && continue
+            fname="/tmp/$(basename $url)"
+            echo "Downloading $url"
+            curl -sL -H "Authorization: token $GH_TOKEN" -o "$fname" "$url"
+            unzip -o "$fname" -d artifacts || true
+          done < /tmp/artifacts_urls.txt
+
+      - name: List downloaded files
+        run: ls -la artifacts || true
+
+      - name: Upload to Cloudflare R2
+        uses: ryand56/r2-upload-action@b801a390acbdeb034c5e684ff5e1361c06639e7c
+        with:
+          r2-account-id: ${{ secrets.R2_ACCOUNT_ID }}
+          r2-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
+          r2-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
+          r2-bucket: ${{ secrets.BUCKET }}
+          source-dir: ./artifacts

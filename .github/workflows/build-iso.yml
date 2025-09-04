@@ -30,7 +30,7 @@ jobs:
       IS_SIGNED: ${{ steps.set.outputs.IS_SIGNED }}
     steps:
       - name: Checkout github actions
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set environment variables
         uses: ./.github/actions/config

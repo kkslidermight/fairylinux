@@ -2,6 +2,9 @@ name: Build ISO
 
 on:
   workflow_dispatch:
+  push:
+    branches: [ main ]
+
 
 permissions:
   contents: read
@@ -49,10 +52,12 @@ jobs:
       REGISTRY: ${{ needs.set-env.outputs.REGISTRY }}
       REGISTRY_USER: ${{ needs.set-env.outputs.REGISTRY_USER }}
       upload-to-cloudflare: true
-      bucket: ${{ secrets.R2_BUCKET }}
+      bucket: ${{ secrets.BUCKET }}
+  # R2 credentials are provided to the called workflow via the `secrets:` mapping below
     secrets:
-      REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      R2_BUCKET: ${{ secrets.R2_BUCKET }}
+      REGISTRY_TOKEN: ${{ secrets.GHCR_PAT }}
       R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
-      ACCESS_KEY_ID: ${{ secrets.ACESS_KEY_ID }}
-      SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+  ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+  SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
+  R2_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+  R2_SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}

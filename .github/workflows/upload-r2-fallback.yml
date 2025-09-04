@@ -1,0 +1,56 @@
+name: Upload R2 fallback
+
+on:
+  workflow_run:
+    workflows: ["Build ISO"]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  upload:
+    name: Upload artifacts to Cloudflare R2 (fallback)
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Install tools
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y jq unzip curl
+
+      - name: Fetch artifacts list for the triggering run
+        id: list
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          run_id=${{ github.event.workflow_run.id }}
+          echo "run_id=$run_id"
+          api_url="https://api.github.com/repos/${{ github.repository }}/actions/runs/$run_id/artifacts"
+          echo "Fetching $api_url"
+          curl -sS -H "Authorization: token $GH_TOKEN" "$api_url" > /tmp/artifacts.json
+          jq -r '.artifacts[] | "name:\(.name) id:\(.id) url:\(.archive_download_url)"' /tmp/artifacts.json || true
+
+      - name: Download and extract artifacts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p artifacts
+          for url in $(jq -r '.artifacts[] | .archive_download_url' /tmp/artifacts.json); do
+            fname="/tmp/$(basename $url)"
+            echo "Downloading $url -> $fname"
+            curl -sL -H "Authorization: token $GH_TOKEN" -o "$fname" "$url"
+            unzip -o "$fname" -d artifacts || true
+          done
+
+      - name: Show downloaded files
+        run: ls -la artifacts || true
+
+      - name: Upload to Cloudflare R2
+        uses: ryand56/r2-upload-action@b801a390acbdeb034c5e684ff5e1361c06639e7c
+        with:
+          r2-account-id: ${{ secrets.R2_ACCOUNT_ID }}
+          r2-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
+          r2-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
+          r2-bucket: ${{ secrets.BUCKET }}
+          source-dir: ./artifacts
